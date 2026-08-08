@@ -1,6 +1,6 @@
 # 🎬 NexStream — Video Hosting API
 
-A **production-grade REST API** for a video hosting platform (similar to YouTube), built with Node.js, Express 5, MongoDB, and Cloudinary. Features complete user authentication, video management, social interactions (likes, comments, subscriptions), playlists, and a channel analytics dashboard.
+A **production-oriented REST API** for a video hosting platform (similar to YouTube), built with Node.js, Express 5, MongoDB, and Cloudinary. Features complete user authentication, video management, social interactions (likes, comments, subscriptions), playlists, and a channel analytics dashboard.
 
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express)](https://expressjs.com/)
