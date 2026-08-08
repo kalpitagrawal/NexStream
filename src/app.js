@@ -2,17 +2,20 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import helmet from "helmet"
+import swaggerUi from "swagger-ui-express"
+import { swaggerSpec } from "./utils/swagger.js"
 
 const app = express();
 
-// Security headers — configured for Cloudinary media URLs
+// Security headers — configured for Cloudinary media URLs + Swagger UI
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            imgSrc: ["'self'", "https://res.cloudinary.com"],
+            imgSrc: ["'self'", "https://res.cloudinary.com", "data:"],
             mediaSrc: ["'self'", "https://res.cloudinary.com"],
-            scriptSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
         }
     },
     crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -53,6 +56,12 @@ app.use("/api/v1/subscriptions", subscriptionRouter)
 app.use("/api/v1/videos", videoRouter)
 app.use("/api/v1/playlist", playlistRouter)
 app.use("/api/v1/dashboard", dashboardRouter)
+
+// Swagger API documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: "NexStream API Documentation"
+}))
 
 // proper error response
 app.use((err, req, res, next) => {

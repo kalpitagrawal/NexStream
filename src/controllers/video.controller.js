@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"
 
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy = "createdAt", sortType = "desc", userId } = req.query
@@ -252,6 +252,12 @@ const deleteVideo = asyncHandler(async (req, res) => {
     if (video.owner.toString() !== req.user._id.toString()) {
         throw new ApiError(403, "You are not allowed to delete this video")
     }
+
+    // Delete video file and thumbnail from Cloudinary
+    await Promise.all([
+        deleteFromCloudinary(video.videoFile, "video"),
+        deleteFromCloudinary(video.thumbnail)
+    ])
 
     await Video.findByIdAndDelete(videoId)
 

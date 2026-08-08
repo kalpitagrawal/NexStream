@@ -9,7 +9,7 @@ dotenv.config({
 connectDB()
     .then(() => {
         app.on("error", (error) => {
-            console.log("Eroor:", error);
+            console.log("Error:", error);
             throw error;
         })
         app.listen(process.env.PORT || 8000, () => {

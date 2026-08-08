@@ -38,6 +38,12 @@ const videoSchema = new Schema({
     timestamps: true
 })
 
+// Text index for efficient search on title and description
+videoSchema.index({ title: "text", description: "text" }, { weights: { title: 10, description: 1 } });
+
+// Compound index for querying videos by owner, sorted by creation date
+videoSchema.index({ owner: 1, createdAt: -1 });
+
 videoSchema.plugin(mongooseAggregatePaginate)
 
 export const Video = mongoose.model("Video", videoSchema);

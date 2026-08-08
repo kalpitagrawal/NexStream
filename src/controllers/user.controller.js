@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -276,6 +276,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar file is missing")
     }
 
+    // Save old avatar URL before updating
+    const oldAvatarUrl = req.user?.avatar;
+
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
     if (!avatar.url) {
@@ -292,12 +295,15 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password");
 
-    // TODO: after this make a utility function after setting the new avatar to delete the old image hold the old image local avatar url of cloudinary in a variable and then delete it
+    // Delete old avatar from Cloudinary after successful update
+    if (oldAvatarUrl) {
+        await deleteFromCloudinary(oldAvatarUrl);
+    }
 
     return res
         .status(200)
         .json(
-            new ApiResponse(200, user, "avatar updated successfully")
+            new ApiResponse(200, user, "Avatar updated successfully")
         )
     
 });
@@ -308,6 +314,9 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     if (!coverImageLocalPath) {
         throw new ApiError(400, "CoverImage file is missing")
     }
+
+    // Save old cover image URL before updating
+    const oldCoverImageUrl = req.user?.coverImage;
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
@@ -325,10 +334,15 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         { new: true }
     ).select("-password");
 
+    // Delete old cover image from Cloudinary after successful update
+    if (oldCoverImageUrl) {
+        await deleteFromCloudinary(oldCoverImageUrl);
+    }
+
     return res
         .status(200)
         .json(
-        new ApiResponse(200, user,"Cover image updated successfully")
+        new ApiResponse(200, user, "Cover image updated successfully")
     )
 
 });
