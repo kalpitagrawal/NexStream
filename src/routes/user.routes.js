@@ -1,5 +1,4 @@
 import { Router } from "express";
-import rateLimit from "express-rate-limit";
 import {
     loginUser,
     logoutUser,
@@ -15,15 +14,8 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-// Stricter limiter for auth routes only
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    message: {
-        success: false,
-        message: "Too many login attempts, please try again later."
-    }
-});
+import { authLimiter } from "../middlewares/rateLimiter.middleware.js";
+
 const router = Router()
 
 router.route("/register").post(
@@ -45,8 +37,8 @@ router.route("/login").post(authLimiter, loginUser)
 //secured routes
 
 router.route("/logout").post(verifyJWT, logoutUser);
-router.route("/refresh-token").post(authLimiter, refreshAccessToken);
-router.route("/change-password").post(verifyJWT, authLimiter, changeCurrentPassword);
+router.route("/refresh-token").post(refreshAccessToken);
+router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 

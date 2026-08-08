@@ -2,28 +2,24 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import helmet from "helmet"
-import rateLimit from "express-rate-limit"
 
 const app = express();
 
-// security headers -must be first
+// Security headers — configured for Cloudinary media URLs
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            imgSrc: ["'self'", "https://res.cloudinary.com"],
+            mediaSrc: ["'self'", "https://res.cloudinary.com"],
+            scriptSrc: ["'self'"],
+        }
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
-app.use(helmet())
-
-// Global rate limiter — 100 requests per 15 min per IP
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,  // sends RateLimit-* headers in response
-    legacyHeaders: false,
-    message: {
-        success: false,
-        message: "Too many requests, please try again later."
-    }
-});
-
-app.use(limiter)
-
+// NOTE: Rate limiting is applied per-route (see middlewares/rateLimiter.middleware.js)
+// This avoids double-counting requests against both global and route-level limits.
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,

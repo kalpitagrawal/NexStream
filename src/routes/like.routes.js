@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
 import {
     getLikedVideos,
     toggleCommentLike,
@@ -7,14 +6,8 @@ import {
     toggleTweetLike,
 } from "../controllers/like.controller.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
-const writeLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 30,
-    message: {
-        success: false,
-        message: "Too many attempts, please try again later."
-    }
-});
+import { writeLimiter } from "../middlewares/rateLimiter.middleware.js"
+
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
