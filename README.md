@@ -83,7 +83,7 @@ src/
 ```bash
 # Clone the repository
 git clone https://github.com/kalpitagrawal/NexStream.git
-cd Youtube-like-Backend
+cd NexStream
 
 # Install dependencies
 npm install
